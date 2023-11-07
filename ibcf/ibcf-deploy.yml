@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ibcf
+  labels:
+    app: ibcf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ibcf-pod
+  template:
+    metadata:
+      labels:
+        app: ibcf-pod
+    spec:
+      containers:
+      - name: ibcf
+        image: hlbvinh/ibcf_rhel88:v3
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 8011
+          name: extern
+          protocol: UDP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ibcf-extern-svc
+spec:
+  type: NodePort
+  ports:
+    - name: extern-port
+      protocol: UDP
+      port: 8011
+      targetPort: extern	  
+  selector:
+    app: ibcf-pod
+
